@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{A set of extentions that make it easier to build on top of xbrlware}
   gem.homepage      = ""
 
-  gem.add_dependency("xbrlware-ruby19", "1.1.2.19")
+  gem.add_dependency("xbrlware-ruby19", "1.1.2.19.1")
 
   gem.add_development_dependency("rspec", "~> 2.0.1")
 
