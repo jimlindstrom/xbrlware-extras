@@ -4,8 +4,8 @@ require File.expand_path('../lib/xbrlware-extras/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Jim Lindstrom"]
   gem.email         = ["jim.lindstrom@gmail.com"]
-  gem.description   = %q{A set of class extentions that make it easier to build on top of xbrlware}
-  gem.summary       = %q{A set of class extentions that make it easier to build on top of xbrlware}
+  gem.description   = %q{A set of extentions that make it easier to build on top of xbrlware}
+  gem.summary       = %q{A set of extentions that make it easier to build on top of xbrlware}
   gem.homepage      = ""
 
   gem.add_dependency("xbrlware-ruby19", "1.1.2.19")
