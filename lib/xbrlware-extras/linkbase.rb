@@ -39,13 +39,18 @@ module Xbrlware
           return uniq_arcs
         end
 
-        def print_tree(indent_count=0)
+        def sprint_tree(indent_count=0)
           indent = " " * indent_count
-          puts indent + "Calc: #{@title} (#{@role})"
+          output = indent + "Calc: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| arc.print_tree(indent_count+1) }
+          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1) }
 
-          puts indent + "\n\n"
+          output += indent + "\n\n"
+          output
+        end
+
+        def print_tree(indent_count=0)
+          puts sprint_tree(indent_count)
         end
 
         def leaf_items(period)
@@ -94,19 +99,24 @@ module Xbrlware
             return false
           end
 
-          def print_tree(indent_count=0)
+          def sprint_tree(indent_count=0)
             indent = " " * indent_count
-            output = "#{indent} #{@label}"
+            str = "#{indent} #{@label}"
 
             (@items || []).each do |item|
               period = item.context.period
               period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
-              output += " [#{item.def["xbrli:balance"]}]" if item.def
-              output += " (#{period_str}) = #{item.value}" if item.value
+              str += " [#{item.def["xbrli:balance"]}]" if item.def
+              str += " (#{period_str}) = #{item.value}" if item.value
             end
-            puts indent + output
+            output = indent + str + "\n"
 
-            (@children || []).each { |child| child.print_tree(indent_count+1) }
+            (@children || []).each { |child| output += child.sprint_tree(indent_count+1) }
+            output
+          end
+
+          def print_tree(indent_count=0)
+            puts sprint_tree(indent_count)
           end
 
           def leaf_items(period)
@@ -126,29 +136,39 @@ module Xbrlware
 
     class PresentationLinkbase
       class Presentation
-        def print_tree(indent_count=0)
+        def sprint_tree(indent_count=0)
           indent = " " * indent_count
-          puts indent + "Pres: #{@title} (#{@role})"
+          output = indent + "Pres: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| arc.print_tree(indent_count+1) }
+          @arcs.each { |arc| output += arc.print_tree(indent_count+1) }
 
-          puts indent + "\n\n"
+          output += indent + "\n\n"
+          output
+        end
+
+        def print_tree(indent_count=0)
+          puts sprint_tree(index_count)
         end
 
         class PresentationArc
-          def print_tree(indent_count=0)
+          def sprint_tree(indent_count=0)
             indent = " " * indent_count
-            output = "#{indent} #{@label}"
+            str = "#{indent} #{@label}"
 
             @items.each do |item|
               period=item.context.period
               period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
-              output += " [#{item.def["xbrli:balance"]}]" unless item.def.nil?
-              output += " (#{period_str}) = #{item.value}" unless item.nil?
+              str += " [#{item.def["xbrli:balance"]}]" unless item.def.nil?
+              str += " (#{period_str}) = #{item.value}" unless item.nil?
             end
-            puts indent + output
+            output = indent + str + "\n"
 
-            @children.each { |child| child.print_tree(indent_count+1) }
+            @children.each { |child| output += child.sprint_tree(indent_count+1) }
+            output
+          end
+
+          def print_tree(indent_count=0)
+            puts sprint_tree(indent_count)
           end
         end
       end
