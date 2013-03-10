@@ -140,14 +140,14 @@ module Xbrlware
           indent = " " * indent_count
           output = indent + "Pres: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| output += arc.print_tree(indent_count+1) }
+          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1) }
 
           output += indent + "\n\n"
           output
         end
 
         def print_tree(indent_count=0)
-          puts sprint_tree(index_count)
+          puts sprint_tree(indent_count)
         end
 
         class PresentationArc
