@@ -106,6 +106,7 @@ module Xbrlware
 
             if simplified
               (@items.last(1) || []).each do |item|
+                str += " {#{item.pretty_name}} "
                 period = item.context.period
                 period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
                 str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
@@ -113,6 +114,7 @@ module Xbrlware
               end
             else
               (@items || []).each do |item|
+                str += " {#{item.pretty_name}} "
                 period = item.context.period
                 period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
                 str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
