@@ -43,7 +43,8 @@ module Xbrlware
           indent = " " * indent_count
           output = indent + "Calc: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1, simplified) }
+          #@arcs.each { |arc| output += arc.sprint_tree(indent_count+1, simplified) }
+          top_level_arcs.each { |arc| output += arc.sprint_tree(indent_count+1, simplified) }
 
           output += indent + "\n\n"
           output
