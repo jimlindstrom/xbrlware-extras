@@ -39,18 +39,18 @@ module Xbrlware
           return uniq_arcs
         end
 
-        def sprint_tree(indent_count=0)
+        def sprint_tree(indent_count=0, simplified=false)
           indent = " " * indent_count
           output = indent + "Calc: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1) }
+          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1, simplified) }
 
           output += indent + "\n\n"
           output
         end
 
-        def print_tree(indent_count=0)
-          puts sprint_tree(indent_count)
+        def print_tree(indent_count=0, simplified=false)
+          puts sprint_tree(indent_count, simplified)
         end
 
         def leaf_items(period)
@@ -99,24 +99,33 @@ module Xbrlware
             return false
           end
 
-          def sprint_tree(indent_count=0)
+          def sprint_tree(indent_count=0, simplified=false)
             indent = " " * indent_count
             str = "#{indent} #{@label}"
 
-            (@items || []).each do |item|
-              period = item.context.period
-              period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
-              str += " [#{item.def["xbrli:balance"]}]" if item.def
-              str += " (#{period_str}) = #{item.value}" if item.value
+            if simplified
+              (@items.last(1) || []).each do |item|
+                period = item.context.period
+                period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
+                str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
+                str += " (#{period_str}) = #{item.value}" if item.value
+              end
+            else
+              (@items || []).each do |item|
+                period = item.context.period
+                period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
+                str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
+                str += " (#{period_str}) = #{item.value}" if item.value
+              end
             end
             output = indent + str + "\n"
 
-            (@children || []).each { |child| output += child.sprint_tree(indent_count+1) }
+            (@children || []).each { |child| output += child.sprint_tree(indent_count+1, simplified) }
             output
           end
 
-          def print_tree(indent_count=0)
-            puts sprint_tree(indent_count)
+          def print_tree(indent_count=0, simplified=false)
+            puts sprint_tree(indent_count, simplified)
           end
 
           def leaf_items(period)
@@ -136,22 +145,22 @@ module Xbrlware
 
     class PresentationLinkbase
       class Presentation
-        def sprint_tree(indent_count=0)
+        def sprint_tree(indent_count=0, simplified=false)
           indent = " " * indent_count
           output = indent + "Pres: #{@title} (#{@role})" + "\n"
 
-          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1) }
+          @arcs.each { |arc| output += arc.sprint_tree(indent_count+1, simplified) }
 
           output += indent + "\n\n"
           output
         end
 
-        def print_tree(indent_count=0)
-          puts sprint_tree(indent_count)
+        def print_tree(indent_count=0, simplified=false)
+          puts sprint_tree(indent_count, simplified)
         end
 
         class PresentationArc
-          def sprint_tree(indent_count=0)
+          def sprint_tree(indent_count=0, simplified=false)
             indent = " " * indent_count
             str = "#{indent} #{@label}"
 
@@ -163,12 +172,12 @@ module Xbrlware
             end
             output = indent + str + "\n"
 
-            @children.each { |child| output += child.sprint_tree(indent_count+1) }
+            @children.each { |child| output += child.sprint_tree(indent_count+1, simplified) }
             output
           end
 
-          def print_tree(indent_count=0)
-            puts sprint_tree(indent_count)
+          def print_tree(indent_count=0, simplified=false)
+            puts sprint_tree(indent_count, simplified)
           end
         end
       end
