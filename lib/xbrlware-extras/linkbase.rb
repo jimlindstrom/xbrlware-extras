@@ -39,6 +39,21 @@ module Xbrlware
           return uniq_arcs
         end
 
+        # NOTE: Assumes Xbrlware::Item has a <=> method 
+        def sort!(args)
+          @arcs = @arcs.sort do |x,y|
+            xscore = 0
+            yitems = y.leaf_items(args[:period])
+            x.leaf_items(args[:period]).each do |xnode|
+              yitems.each do |ynode|
+                xscore = (xnode <=> ynode)
+              end
+            end
+            xscore <=> 0
+          end
+          @arcs.each{ |arc| arc.sort!(args) }
+        end
+
         def sprint_tree(indent_count=0, simplified=false)
           indent = " " * indent_count
           output = indent + "Calc: #{@title} (#{@role})" + "\n"
@@ -87,6 +102,23 @@ module Xbrlware
               child.write_constructor(file, child_name)
               file.puts "#{arc_name}.children.push #{child_name}"
             end
+          end
+
+          # NOTE: Assumes Xbrlware::Item has a <=> method 
+          def sort!(args)
+            if @children
+              @children = @children.sort do |x,y|
+                xscore = 0
+                yitems = y.leaf_items(args[:period])
+                x.leaf_items(args[:period]).each do |xnode|
+                  yitems.each do |ynode|
+                    xscore = (xnode <=> ynode)
+                  end
+                end
+                xscore <=> 0
+              end
+            end
+            #(@children || []).each{ |child| child.sort! }
           end
 
           def contains_arc?(arc)
