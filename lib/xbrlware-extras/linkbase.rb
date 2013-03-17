@@ -39,16 +39,16 @@ module Xbrlware
           return uniq_arcs
         end
 
-        # NOTE: Assumes Xbrlware::Item has a <=> method 
         def sort!(args)
           @arcs = @arcs.sort do |x,y|
             xscore = 0
             yitems = y.leaf_items(args[:period])
             x.leaf_items(args[:period]).each do |xnode|
               yitems.each do |ynode|
-                xscore = (xnode <=> ynode)
+                xscore = (xnode <=> ynode) # NOTE: Assumes caller has defined <=> for all leaf nodes
               end
             end
+            puts "\"#{x.pretty_name}\" #{xscore <=> 0} \"#{y.pretty_name}\""
             xscore <=> 0
           end
           @arcs.each{ |arc| arc.sort!(args) }
@@ -104,7 +104,6 @@ module Xbrlware
             end
           end
 
-          # NOTE: Assumes Xbrlware::Item has a <=> method 
           def sort!(args)
             if @children
               @children = @children.sort do |x,y|
@@ -112,13 +111,14 @@ module Xbrlware
                 yitems = y.leaf_items(args[:period])
                 x.leaf_items(args[:period]).each do |xnode|
                   yitems.each do |ynode|
-                    xscore = (xnode <=> ynode)
+                    xscore = (xnode <=> ynode) # NOTE: Assumes caller has defined <=> for all leaf nodes
                   end
                 end
+                puts "\"#{x.label}\" #{xscore <=> 0} \"#{y.label}\""
                 xscore <=> 0
               end
             end
-            #(@children || []).each{ |child| child.sort! }
+            (@children || []).each{ |child| child.sort!(args) }
           end
 
           def contains_arc?(arc)
