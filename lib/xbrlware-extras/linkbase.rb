@@ -134,11 +134,18 @@ module Xbrlware
 
           def sprint_tree(indent_count=0, simplified=false)
             indent = " " * indent_count
-            str = "#{indent} #{@label}"
+            str = "#{indent} CA:#{@label}"
 
             if simplified
               (@items.last(1) || []).each do |item|
-                str += " {#{item.pretty_name}} "
+                str += " I:{#{item.pretty_name}} "
+                # FIXME: First off, sub-leaf is terrible, non-standard, confusing terminology. Call it something else.
+                # FIXME: Second, why aren't we calling Item::print_tree()?
+                if item.is_sub_leaf?
+                  str += " [sub-leaf]"
+                else
+                  str += " [non-sub-leaf]"
+                end
                 period = item.context.period
                 period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
                 str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
@@ -146,7 +153,12 @@ module Xbrlware
               end
             else
               (@items || []).each do |item|
-                str += " {#{item.pretty_name}} "
+                str += " I:{#{item.pretty_name}} "
+                if item.is_sub_leaf?
+                  str += " [sub-leaf]"
+                else
+                  str += " [non-sub-leaf]"
+                end
                 period = item.context.period
                 period_str = period.is_duration? ? "#{period.value["start_date"]} to #{period.value["end_date"]}" : "#{period.value}"
                 str += " [#{item.def["xbrli:balance"]}]" if item.def && item.def["xbrli:balance"]
