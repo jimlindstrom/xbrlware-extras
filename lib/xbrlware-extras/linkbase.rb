@@ -25,7 +25,10 @@ module Xbrlware
         end
 
         def is_disclosure?
-          @title.downcase =~ /^disclosure/ ? true : false
+          return true if @title.downcase =~ /^disclosure/ 
+          return true if @title.downcase =~ /^summary of/
+          return true if @title.downcase =~ /details$/
+          return false
         end
 
         def top_level_arcs
